@@ -1,67 +1,76 @@
 // index.js
 Page({
   data: {
-    wish: '', //默认的wish文本
+    wish: '', // 默认的 wish 文本
     result: '', // 默认的 result 文本
-    images: [],
-    currentImageIndex: 0,
-    currentImageUrl: '',
-    animation: {},
-    animationDuration: 1500,
-    isAnimating: false,
+    images: [], // 图片数组
+    currentImageIndex: 0, // 当前图片索引
+    currentImageUrl: '', // 当前图片地址
+    animation: {}, // 动画对象
+    animationDuration: 1500, // 动画持续时间
+    isAnimating: false, // 是否正在播放动画
+    isAudioPlaying: true, // 是否播放音效的状态，默认为开启
   },
 
   onLoad: function () {
     this.initImagesArray(); // 初始化图片数组
-    this.setData({
-      currentImageUrl: this.data.images[this.data.currentImageIndex]
-    });
+    this.resetCurrentImage(); // 重置当前图片
+    // 初始化音频对象
+    this.audioContext = wx.createInnerAudioContext();
+    this.audioContext.src = '/pages/audio/music.m4a'; // 替换成你的音频文件的URL
+    this.audioContext.loop = false; // 设置为不循环播放
   },
 
+  // 点击茭杯图像触发的事件
   handleImageTap: function () {
     if (!this.data.isAnimating) {
       this.setData({
-        result: '' // 每次点击前重置 result 数据
+        result: '', // 每次点击前重置 result 数据
       });
 
       this.initImagesArray(); // 每次点击前重置图片数组
       this.addRandomArrayToImages(); // 添加随机数组
+
+      // 如果音效开启，则播放 BGM
+      if (this.data.isAudioPlaying) {
+        this.playBGM();
+      }
+
       this.playImagesSequentially(); // 播放图片动画
     }
   },
 
+  // 初始化图片数组
   initImagesArray: function () {
-    // 初始化图片数组
     this.setData({
-      images: ['1', '2', '1', '2', '1', '2', '3', '3', '4', '4', '5', '5', '6', '6']
+      images: ['1', '2', '1', '2', '1', '2', '3', '3', '4', '4', '5', '5', '6', '6'],
     });
   },
 
+  // 向图片数组添加随机数组
   addRandomArrayToImages: function () {
     const predefinedNumbers = [7, 7, 9, 11];
     const randomIndex = Math.floor(Math.random() * predefinedNumbers.length);
     const selectedNumber = predefinedNumbers[randomIndex];
-
-    // 根据选取的数字构建新数组
     const newArray = [selectedNumber, selectedNumber, selectedNumber, selectedNumber + 1];
 
     // 将新数组添加到图片数组中
     this.setData({
-      images: [...this.data.images, ...newArray]
+      images: [...this.data.images, ...newArray],
     });
 
-    // 播放图片动画
+    // 播放图片动画并更新结果
     this.playImagesSequentiallyAndUpdateResult(selectedNumber);
   },
 
+  // 播放图片动画并更新结果
   playImagesSequentiallyAndUpdateResult: function (selectedNumber) {
     this.setData({
-      isAnimating: true
+      isAnimating: true,
     });
 
     const images = this.data.images;
     const numImages = images.length;
-
     let currentIndex = 0;
 
     const playNextImage = () => {
@@ -74,34 +83,35 @@ Page({
 
         currentIndex++;
 
-        // 调整这个常数值来控制后面播放的速度
         const speedUpFactor = 6;
-
         const remainingImages = numImages - currentIndex - 1;
         const intervalDuration = remainingImages > 0
           ? (this.data.animationDuration - 200) / (remainingImages + speedUpFactor)
           : 0;
 
         setTimeout(() => {
-          // 递归调用播放下一张图片
           playNextImage();
 
           if (currentIndex === numImages) {
-            // 所有图片动画播放完成后，根据选取的数字更新 result
             this.updateResult(selectedNumber);
           }
         }, intervalDuration);
       } else {
         this.setData({
-          isAnimating: false
+          isAnimating: false,
         });
       }
     };
 
-    // 开始播放
     playNextImage();
   },
 
+  // 播放 BGM
+  playBGM: function () {
+    this.audioContext.play();
+  },
+
+  // 更新结果文本
   updateResult: function (selectedNumber) {
     let resultText = '';
 
@@ -113,30 +123,63 @@ Page({
       resultText = '笑杯,表示神明一笑、不解';
     }
 
-    // 更新 result 的文本
     this.setData({
-      result: resultText
+      result: resultText,
+      wish: resultText,
     });
 
-    // 额外赋值给 wish
-    this.setData({
-      wish: resultText  
-  });
-
+    // 如果音效开启，则停止 BGM
+    if (this.data.isAudioPlaying) {
+      this.audioContext.stop();
+    }
   },
 
-  onInput(e) {
+  // 切换音效状态（开启/关闭）
+  toggleAudio: function () {
     this.setData({
-      text: e.detail.value
-    })
+      isAudioPlaying: !this.data.isAudioPlaying,
+    });
   },
 
-})
+  // 重置按钮点击事件
+  handleReset: function () {
+    this.setData({
+      wish: '',
+      result: '',
+      currentImageIndex: 0,
+      isAnimating: false,
+      isAudioPlaying: true,
+    });
 
+    // 如果音效开启，则停止 BGM
+    if (this.data.isAudioPlaying) {
+      this.audioContext.stop();
+    }
 
+    // 重置当前图片
+    this.resetCurrentImage();
+  },
 
+  // 重置当前图片和图片地址
+  resetCurrentImage: function () {
+    const defaultImageIndex = 0;
+    this.setData({
+      currentImageUrl: this.data.images[defaultImageIndex],
+    });
+  },
 
-
-
-
-
+  // 输入框内容变化事件
+  onInput: function (e) {
+    this.setData({
+      text: e.detail.value,
+    });
+  },
+  // 设置转发时的标题、路径和图片
+  onShareAppMessage: function () {
+    return {
+      title: '遇事不决，可问老爷', // 转发的标题
+      path: '/pages/index/index', // 转发的路径，应该对应小程序的页面路径
+      imageUrl: '/pages/image/share.png' // 转发的图片，可以是本地路径或网络链接
+    }
+  }  
+});

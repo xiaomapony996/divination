@@ -1,22 +1,21 @@
 <!--index.wxml-->
 <view class="container">
+  <textarea class="wish-input" placeholder="请输入愿望，然后点击茭杯" bindinput="onInput" value="{{wish}}"></textarea>
 
-<textarea class="wish-input" placeholder="请输入愿望，然后点击茭杯" bindinput="onInput" value="{{wish}}"/>
-
-
-<view class="main">
-  <image class='bg' src="../image/bg-{{currentImageUrl}}.svg" bindtap="handleImageTap" animation="{{animation}}"></image>
-</view>
+  <view class="main">
+    <image class='bg' src="../image/bg-{{currentImageUrl}}.svg" bindtap="handleImageTap" animation="{{animation}}"></image>
+  </view>
 
 </view>
-
 
 <view class="button-container">
-  <view><image class="audio-button" src="../image/sound-on.svg"></image></view>
-  <view><image class="reset-button" src="../image/reset.svg"></image></view>
+  <!-- 播放音效按钮 -->
+  <view><image class="audio-button" src="{{isAudioPlaying ? '../image/sound-on.svg' : '../image/sound-off.svg'}}" bindtap="toggleAudio"></image></view>
+  <!-- 重置按钮 -->
+  <view><image class="reset-button" src="../image/reset.svg" bindtap="handleReset"></image></view>
 </view>
-
 
 <view class="adcontainer">
   <!-- <ad unit-id="adunit-f88f745faf64650e"></ad> -->
 </view>
+
