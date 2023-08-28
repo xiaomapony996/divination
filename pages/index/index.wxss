@@ -1,0 +1,69 @@
+/**index.wxss**/
+
+/* 整体页面设置 */
+page{
+  width: 99%;
+  height: 99%;
+  /* border: 1px solid black; */
+}
+
+/* 主容器设置 */
+.container{
+  width: 100%;
+  height: 80%;
+  /* border: 1px solid red; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 广告容器设置 */
+.adcontainer{
+  width: 100%;
+  height: 10%;
+  /* border: 1px solid blue; */
+}
+
+/* 主容器里的愿望输入模块设置 */
+.wish-input{
+  width: 90%;
+  margin: 2rem;
+  height: 3rem;
+  border: 6px solid #ba3325;
+  border-radius: 10px;
+  font-family: YouYuan, KaiTi, HuaPuGuangTi;
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: #ba3325;
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+.main{
+  width: 100%;
+  height: 80%;
+  /* border: 1px solid orange; */
+}
+.button-container{
+  width: 100%;
+  height: 10%;
+  /* border: 1px solid green; */
+  display: flex;
+  justify-content: space-between;
+}
+.audio-button{
+  margin-left: 0.5rem;
+  width: 3rem;
+  height: 3rem;
+  /* border:1px solid hotpink; */
+}
+.reset-button{
+  margin-right: 0.5rem;
+  width: 3rem;
+  height: 3rem;
+  /* border:1px solid hotpink; */
+}
+.bg{
+  width: 100%;
+  height: 100%;
+}
